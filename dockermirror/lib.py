@@ -67,6 +67,10 @@ class DockerArchive(object):
         self.filepath.unlink()
 
     def _save(self, images):
+        """
+        docker-py do not currently support saving multiple images so run docker directly
+        in the meantime
+        """
         tmpfile = self.filepath.with_suffix('.tmp')
         cmd = ['docker', 'save', '--output', str(tmpfile)]
         cmd.extend([i.name for i in images])
@@ -84,7 +88,8 @@ class DockerArchive(object):
                 image.remove()
 
     def _load(self):
-        subprocess.run(['docker', 'load', '--input', str(self.filepath)], check=True)
+        with self.filepath.open('rb') as f:
+            DOCKER.images.load(f)
 
     def load(self, registry=None, remove=False):
         self._load()

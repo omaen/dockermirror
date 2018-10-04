@@ -32,7 +32,7 @@ def add_image():
     archive.save(images, remove=False)
 
     response = {
-        "images": [i.name for i in archive.images],
+        "images": [i.name for i in images],
         "archive": str(archive.filepath)
     }
 
