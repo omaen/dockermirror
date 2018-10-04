@@ -68,8 +68,8 @@ class DockerArchive(object):
 
     def _save(self, images):
         """
-        docker-py do not currently support saving multiple images so run docker directly
-        in the meantime
+        docker-py does not currently support saving multiple images at the same time
+        so run docker directly in the meantime
         """
         tmpfile = self.filepath.with_suffix('.tmp')
         cmd = ['docker', 'save', '--output', str(tmpfile)]
