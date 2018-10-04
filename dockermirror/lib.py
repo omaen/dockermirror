@@ -11,12 +11,20 @@ LOGGER = logging.getLogger(__name__)
 
 class DockerImage(object):
     def __init__(self, name):
-        if ':' not in name.split('/')[-1]:
-            self.name = '%s:latest' % name
-        else:
-            self.name = name
-
+        self._name = None
         self._image = None
+        self.name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        if ':' not in name.split('/')[-1]:
+            self._name = '%s:latest' % name
+        else:
+            self._name = name
 
     def pull(self):
         LOGGER.debug('Pulling docker image %s', self.name)
