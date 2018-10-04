@@ -5,11 +5,10 @@ import logging
 from pathlib import Path
 import os
 import time
-import hashlib
-import base64
 import json
 
-import dockermirror
+from dockermirror import DockerImage, DockerArchive
+from dockermirror.common import get_archive_name
 
 
 LOGGER = logging.getLogger()
@@ -18,21 +17,7 @@ LOGGER = logging.getLogger()
 def get_archives(path):
     for entry in os.scandir(path):
         if entry.name.endswith('.tar') and entry.is_file():
-            yield dockermirror.DockerArchive(Path(entry.path))
-
-def get_archive_filename(data):
-    """
-    Produce a length limited deterministic file system friendly name from
-    variable input
-    """
-    h = hashlib.sha256()
-    h.update(data)
-    sha256 = h.digest()
-    b64 = base64.urlsafe_b64encode(sha256)
-
-    # Remove base64 padding (trailing '=' characters) as there is no need to
-    # reverse the base64 operation later
-    return '%s.tar' % b64.decode('utf-8').rstrip('=')
+            yield DockerArchive(Path(entry.path))
 
 def main():
     # global arguments
@@ -97,16 +82,17 @@ def main():
     LOGGER.addHandler(console)
 
     if args.subcommand == 'save':
-        images = [dockermirror.DockerImage(i) for i in args.images]
-        filename = get_archive_filename(''.join(sorted(args.images)).encode('utf-8'))
+        filename = get_archive_name(args.images)
         archive_path = Path(args.output_dir).joinpath(filename)
-        archive = dockermirror.DockerArchive(archive_path)
+        archive = DockerArchive(archive_path)
+
+        images = [DockerImage(i) for i in args.images]
         archive.save(images, args.remove)
     elif args.subcommand == 'load':
-        archive = dockermirror.DockerArchive(Path(args.archive))
+        archive = DockerArchive(Path(args.archive))
         archive.load(args.registry, args.remove)
     elif args.subcommand == 'remove':
-        archive = dockermirror.DockerArchive(Path(args.archive))
+        archive = DockerArchive(Path(args.archive))
 
         for image in archive.images:
             image.remove()
@@ -128,7 +114,7 @@ def main():
                 LOGGER.debug('Sleeping %s seconds', sleep_time)
                 time.sleep(args.interval - run_time)
     elif args.subcommand == 'show':
-        archive = dockermirror.DockerArchive(Path(args.archive))
+        archive = DockerArchive(Path(args.archive))
         print(json.dumps(archive.manifest, sort_keys=True, indent=4))
 
 

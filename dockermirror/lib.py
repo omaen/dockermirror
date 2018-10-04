@@ -29,8 +29,9 @@ class DockerImage(object):
 
 
 class DockerArchive(object):
-    def __init__(self, filepath):
+    def __init__(self, filepath=None):
         self.filepath = filepath
+        self.name = None
         self._manifest = None
 
     @property

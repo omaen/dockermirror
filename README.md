@@ -1,6 +1,10 @@
 # dockermirror
 Docker mirroring for networks without internet connectivity
 
+# CLI usage
+
+    python3 -m dockermirror --help
+
 # Docker container for API development
 
     docker build -t dockermirror .
