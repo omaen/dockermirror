@@ -6,7 +6,7 @@ COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 COPY dockermirror/ dockermirror/
 
-VOLUME /var/spool/docker-mirror
+VOLUME /var/spool/dockermirror
 
 ENV FLASK_APP=dockermirror.api.app
 ENTRYPOINT ["flask", "run", "--host=0.0.0.0"]
