@@ -7,8 +7,8 @@ import os
 import time
 import json
 
-from dockermirror import DockerImage, DockerArchive
-from dockermirror.common import get_archive_name
+from .lib import DockerImage, DockerArchive
+from .common import get_archive_name
 
 
 LOGGER = logging.getLogger()

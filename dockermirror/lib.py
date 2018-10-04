@@ -1,31 +1,43 @@
 import logging
-import subprocess
 import tarfile
 import json
+import docker
+import subprocess
 
 
-DOCKER = 'docker'
+DOCKER = docker.from_env()
 LOGGER = logging.getLogger(__name__)
 
 
 class DockerImage(object):
     def __init__(self, name):
-        self.name = name
+        if ':' not in name.split('/')[-1]:
+            self.name = '%s:latest' % name
+        else:
+            self.name = name
+
+        self._image = None
 
     def pull(self):
-        subprocess.run([DOCKER, 'pull', self.name], check=True)
+        LOGGER.debug('Pulling docker image %s', self.name)
+        self._image = DOCKER.images.pull(self.name)
 
     def push(self):
-        subprocess.run([DOCKER, 'push', self.name], check=True)
+        LOGGER.debug('Pushing docker image %s', self.name)
+        DOCKER.images.push(self.name)
 
     def tag(self, registry):
+        if self._image is None:
+            self._image = DOCKER.images.get(self.name)
+
         tag = '%s/%s' % (registry, self.name)
-        subprocess.run([DOCKER, 'tag', self.name, tag], check=True)
+        LOGGER.debug('Tagging docker image %s with tag %s', self.name, tag)
+        self._image.tag(tag)
         return DockerImage(tag)
 
     def remove(self):
         LOGGER.debug('Removing docker image %s', self.name)
-        subprocess.run([DOCKER, 'rmi', self.name], check=True)
+        DOCKER.images.remove(self.name)
 
 
 class DockerArchive(object):
@@ -56,7 +68,7 @@ class DockerArchive(object):
 
     def _save(self, images):
         tmpfile = self.filepath.with_suffix('.tmp')
-        cmd = [DOCKER, 'save', '--output', str(tmpfile)]
+        cmd = ['docker', 'save', '--output', str(tmpfile)]
         cmd.extend([i.name for i in images])
         subprocess.run(cmd, check=True)
         tmpfile.rename(self.filepath)
@@ -72,7 +84,7 @@ class DockerArchive(object):
                 image.remove()
 
     def _load(self):
-        subprocess.run([DOCKER, 'load', '--input', str(self.filepath)], check=True)
+        subprocess.run(['docker', 'load', '--input', str(self.filepath)], check=True)
 
     def load(self, registry=None, remove=False):
         self._load()
