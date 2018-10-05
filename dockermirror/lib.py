@@ -77,6 +77,9 @@ class DockerArchive(object):
 
         return self._name
 
+    def stat(self):
+        return self.filepath.stat()
+
     def remove(self):
         LOGGER.debug('Removing archive file %s', self.filepath)
         self.filepath.unlink()

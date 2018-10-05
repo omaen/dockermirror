@@ -32,8 +32,9 @@ def add_image():
     archive.save(images, remove=False)
 
     response = {
-        "images": [i.name for i in images],
-        "archive": archive.name
+        "images": [i.name for i in archive.images],
+        "archive": archive.name,
+        "size": archive.stat().st_size
     }
 
     return jsonify(response), 201
@@ -46,7 +47,8 @@ def get_archive_info(name):
     try:
         response = {
             "images": [i.name for i in archive.images],
-            "archive": archive.name
+            "archive": archive.name,
+            "size": archive.stat().st_size
         }
     except FileNotFoundError:
         abort(404)
