@@ -26,7 +26,7 @@ View archive information:
 
 # Run API in a docker container
 
-    docker build -f Dockermirror-api -t dockermirror-api .
+    docker build -f Dockerfile-api -t dockermirror-api .
     docker run \
         --name dockermirror-api --rm \
         -p 5000:5000 \
