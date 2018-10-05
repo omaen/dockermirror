@@ -33,7 +33,19 @@ def add_image():
 
     response = {
         "images": [i.name for i in images],
-        "archive": str(archive.filepath)
+        "archive": archive.name
     }
 
     return jsonify(response), 201
+
+@app.route('/api/v1/archive/<name>', methods=['GET'])
+def get_archive_info(name):
+    archive_path = Path(app.config['OUTPUT_DIR']).joinpath(name)
+    archive = DockerArchive(archive_path)
+
+    response = {
+        "images": [i.name for i in archive.images],
+        "archive": archive.name
+    }
+
+    return jsonify(response), 200

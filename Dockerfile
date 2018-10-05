@@ -8,5 +8,4 @@ COPY dockermirror/ dockermirror/
 
 VOLUME /var/spool/dockermirror
 
-ENV FLASK_APP=dockermirror.api.app
-ENTRYPOINT ["flask", "run", "--host=0.0.0.0"]
+ENTRYPOINT ["python3", "-m", "dockermirror"]

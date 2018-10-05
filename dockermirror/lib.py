@@ -49,10 +49,10 @@ class DockerImage(object):
 
 
 class DockerArchive(object):
-    def __init__(self, filepath=None):
+    def __init__(self, filepath):
         self.filepath = filepath
-        self.name = None
         self._manifest = None
+        self._name = None
 
     @property
     def manifest(self):
@@ -70,6 +70,13 @@ class DockerArchive(object):
             for tag in image['RepoTags']:
                 yield DockerImage(tag)
 
+    @property
+    def name(self):
+        if self._name is None:
+            self._name = self.filepath.name
+
+        return self._name
+
     def remove(self):
         LOGGER.debug('Removing archive file %s', self.filepath)
         self.filepath.unlink()
@@ -82,6 +89,7 @@ class DockerArchive(object):
         tmpfile = self.filepath.with_suffix('.tmp')
         cmd = ['docker', 'save', '--output', str(tmpfile)]
         cmd.extend([i.name for i in images])
+        LOGGER.debug('Saving images to archive file %s', self.filepath)
         subprocess.run(cmd, check=True)
         tmpfile.rename(self.filepath)
 
