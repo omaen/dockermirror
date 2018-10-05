@@ -85,7 +85,6 @@ def main():
         filename = get_archive_name(args.images)
         archive_path = Path(args.output_dir).joinpath(filename)
         archive = DockerArchive(archive_path)
-
         images = [DockerImage(i) for i in args.images]
         archive.save(images, args.remove)
     elif args.subcommand == 'load':
