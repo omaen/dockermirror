@@ -14,7 +14,7 @@ if 'DOCKER_MIRROR_API_SETTINGS' in os.environ:
 
 @app.route('/')
 def index():
-    return "Docker Mirror API"
+    return "Dockermirror API"
 
 @app.route('/api/v1/archive', methods=['POST'])
 def add_image():
@@ -43,9 +43,12 @@ def get_archive_info(name):
     archive_path = Path(app.config['OUTPUT_DIR']).joinpath(name)
     archive = DockerArchive(archive_path)
 
-    response = {
-        "images": [i.name for i in archive.images],
-        "archive": archive.name
-    }
+    try:
+        response = {
+            "images": [i.name for i in archive.images],
+            "archive": archive.name
+        }
+    except FileNotFoundError:
+        abort(404)
 
     return jsonify(response), 200
