@@ -1,18 +1,20 @@
 import logging
 import tarfile
 import json
-import docker
 import subprocess
+
+import docker
 
 
 DOCKER = docker.from_env()
 LOGGER = logging.getLogger(__name__)
 
 
-class DockerImage(object):
+class DockerImage:
     def __init__(self, name):
         self._name = None
         self._image = None
+        self._registry = None
         self.name = name
 
     @property
@@ -21,10 +23,21 @@ class DockerImage(object):
 
     @name.setter
     def name(self, name):
-        if ':' not in name.split('/')[-1]:
+        last_part = name.split('/')[-1]
+
+        if ':' not in last_part:
             self._name = '%s:latest' % name
         else:
             self._name = name
+
+    @property
+    def registry(self):
+        if self._registry is None and '/' in self.name:
+            first_part = self.name.split('/', 1)[0]
+            if any(c in first_part for c in ['.', ':']):
+                self._registry = first_part
+
+        return self._registry
 
     def pull(self):
         LOGGER.debug('Pulling docker image %s', self.name)
@@ -34,21 +47,20 @@ class DockerImage(object):
         LOGGER.debug('Pushing docker image %s', self.name)
         DOCKER.images.push(self.name)
 
-    def tag(self, registry):
+    def tag(self, repotag):
         if self._image is None:
             self._image = DOCKER.images.get(self.name)
 
-        tag = '%s/%s' % (registry, self.name)
-        LOGGER.debug('Tagging docker image %s with tag %s', self.name, tag)
-        self._image.tag(tag)
-        return DockerImage(tag)
+        LOGGER.debug('Tagging docker image %s with tag %s', self.name, repotag)
+        self._image.tag(repotag)
+        return DockerImage(repotag)
 
     def remove(self):
         LOGGER.debug('Removing docker image %s', self.name)
         DOCKER.images.remove(self.name)
 
 
-class DockerArchive(object):
+class DockerArchive:
     def __init__(self, filepath):
         self.filepath = filepath
         self._manifest = None
@@ -115,7 +127,12 @@ class DockerArchive(object):
 
         if registry is not None:
             for image in self.images:
-                tagged = image.tag(registry)
+                if image.registry is None:
+                    repotag = '%s/%s' % (registry, image.name)
+                else:
+                    repotag = image.name.replace(image.registry, registry, 1)
+
+                tagged = image.tag(repotag)
                 tagged.push()
                 tagged.remove()
                 image.remove()

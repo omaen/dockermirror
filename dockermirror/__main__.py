@@ -61,7 +61,7 @@ def main():
 
     # monitor subcommands
     monitor_parser = subparsers.add_parser(
-       'monitor', help='monitor folder for new archives and auto-load')
+        'monitor', help='monitor folder for new archives and auto-load')
     monitor_parser.add_argument('--registry', metavar='REGISTRY', default=None,
                                 help='push archive images to registry')
     monitor_parser.add_argument('--interval', metavar='SECONDS', default=60, type=int,

@@ -1,6 +1,7 @@
-from flask import Flask, jsonify, request, abort
 import os
 from pathlib import Path
+
+from flask import Flask, jsonify, request, abort
 
 from ..lib import DockerImage, DockerArchive
 from ..common import get_archive_name
@@ -11,6 +12,7 @@ app.config.from_object('dockermirror.api.default_settings')
 
 if 'DOCKER_MIRROR_API_SETTINGS' in os.environ:
     app.config.from_envvar('DOCKER_MIRROR_API_SETTINGS')
+
 
 @app.route('/')
 def index():
