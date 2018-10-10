@@ -49,7 +49,7 @@ def add_save_task():
     with Connection(conn):
         q = Queue('default')
         job = q.enqueue(create_archive, archive, images,
-                        timeout='1h', ttl='24h', result_ttl='30d')
+                        timeout='1h', ttl='24h', result_ttl='7d')
 
     response = {
         'job_id': job.get_id(),
@@ -76,7 +76,8 @@ def get_job_status(job_id):
                 'error': job.exc_info.splitlines()[-1]
             }
             return jsonify(status), 200
-        elif job.is_finished:
+
+        if job.is_finished:
             headers = {
                 'Location': '/api/v1/archive/%s' % job.result
             }
@@ -85,11 +86,11 @@ def get_job_status(job_id):
                 'result': 'Successfully created %s' % job.result
             }
             return jsonify(status), 303, headers
-        else:
-            status = {
-                'status': job.get_status()
-            }
-            return jsonify(status), 202
+
+        status = {
+            'status': job.get_status()
+        }
+        return jsonify(status), 202
 
 @app.route('/api/v1/archive/<name>', methods=['GET'])
 def get_archive_info(name):

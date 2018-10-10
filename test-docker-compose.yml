@@ -4,5 +4,3 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-test
-    volumes:
-      - .:/src
