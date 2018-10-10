@@ -24,13 +24,10 @@ View archive information:
         dockermirror \
         <args>
 
-# Run API in a docker container
+# Run API server in docker containers
 
-    docker build -f Dockerfile-api -t dockermirror-api .
-    docker run \
-        --name dockermirror-api --rm \
-        -p 5000:5000 \
-        --env FLASK_ENV=development \
-        --mount 'type=bind,source=/tmp/dockermirror,target=/var/spool/dockermirror' \
-        --mount 'type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock' \
-        dockermirror-api
+    docker-compose -f api-docker-compose.yml up
+
+# Run tests
+
+    docker-compose -f test-docker-compose.yml run --rm dockermirror-test

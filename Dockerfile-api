@@ -1,9 +1,7 @@
-FROM docker
-
-RUN apk add --no-cache python3
+FROM python:3
 
 COPY api-requirements.txt .
-RUN pip3 install --no-cache-dir -r api-requirements.txt
+RUN pip install --no-cache-dir -r api-requirements.txt
 COPY dockermirror/ dockermirror/
 
 VOLUME /var/spool/dockermirror

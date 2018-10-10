@@ -1,0 +1,11 @@
+FROM docker
+
+RUN apk add --no-cache python3
+
+COPY worker-requirements.txt .
+RUN pip3 install --no-cache-dir -r worker-requirements.txt
+COPY dockermirror/ dockermirror/
+
+VOLUME /var/spool/dockermirror
+
+ENTRYPOINT ["python3", "-m", "dockermirror.worker"]

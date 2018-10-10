@@ -1,1 +1,1 @@
-from .lib import DockerImage, DockerArchive
+from dockermirror.lib import DockerImage, DockerArchive

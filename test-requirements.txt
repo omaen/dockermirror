@@ -1,5 +1,7 @@
 flask
 docker
+redis
+rq
 pytest
 pytest-cov
 pylint

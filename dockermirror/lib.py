@@ -23,12 +23,7 @@ class DockerImage:
 
     @name.setter
     def name(self, name):
-        last_part = name.split('/')[-1]
-
-        if ':' not in last_part:
-            self._name = '%s:latest' % name
-        else:
-            self._name = name
+        self._name = name
 
     @property
     def registry(self):
