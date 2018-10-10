@@ -1,1 +1,3 @@
-from dockermirror.lib import DockerImage, DockerArchive
+from dockermirror.lib import DockerMirror, DockerImage, DockerArchive
+
+__all__ = ['DockerMirror', 'DockerImage', 'DockerArchive']

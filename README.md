@@ -8,21 +8,19 @@ Docker mirroring for networks without internet connectivity
 # API usage
 Create archive:
 
-    curl -H 'Content-Type: application/json' -XPOST -d '{"images": ["debian", "debian:jessie"]}' http://dockermirror:5000/api/v1/archive
+    curl -v -H 'Content-Type: application/json' -XPOST -d '{"images": ["debian:latest", "python:3"]}' http://dockermirror:5000/api/v1/archive
 
-View archive information:
+Check url from location header for status:
 
-    curl -XGET http://dockermirror:5000/api/v1/archive/_sYP7FfCCETSPeaNkQFXH69DLAPORf7ly2EhpGSQ1Ak.tar
+    curl -v http://localhost:5000/api/v1/job/69e0eb21-7847-481a-96e6-2af2f773efa7
+
+When the job has finished it is possible to check archive information from the status url location header as long as the file still exists:
+
+    curl -v http://dockermirror:5000/api/v1/archive/_sYP7FfCCETSPeaNkQFXH69DLAPORf7ly2EhpGSQ1Ak.tar
 
 # Run dockermirror command in docker container
 
-    docker build -t dockermirror .
-    docker run \
-        --name dockermirror --rm \
-        --mount 'type=bind,source=/tmp/dockermirror,target=/var/spool/dockermirror' \
-        --mount 'type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock' \
-        dockermirror \
-        <args>
+    docker-compose run --rm dockermirror <dockermirror_args>
 
 # Run API server in docker containers
 

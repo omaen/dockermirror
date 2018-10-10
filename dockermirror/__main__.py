@@ -7,8 +7,7 @@ import os
 import time
 import json
 
-from dockermirror import DockerImage, DockerArchive
-from dockermirror.common import get_archive_name
+from dockermirror import DockerMirror, DockerArchive, DockerImage
 
 
 LOGGER = logging.getLogger()
@@ -82,11 +81,9 @@ def main():
     LOGGER.addHandler(console)
 
     if args.subcommand == 'save':
-        filename = get_archive_name(args.images)
-        archive_path = Path(args.output_dir).joinpath(filename)
-        archive = DockerArchive(archive_path)
         images = [DockerImage(i) for i in args.images]
-        archive.save(images, args.remove)
+        dm = DockerMirror()
+        dm.save(Path(args.output_dir), images, args.remove)
     elif args.subcommand == 'load':
         archive = DockerArchive(Path(args.archive))
         archive.load(args.registry, args.remove)

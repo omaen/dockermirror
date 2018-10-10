@@ -5,8 +5,7 @@ import redis
 from rq import Connection, Queue
 from flask import Flask, jsonify, request, abort
 
-from dockermirror import DockerImage, DockerArchive
-from dockermirror.common import get_archive_name
+from dockermirror import DockerMirror, DockerArchive, DockerImage
 
 
 app = Flask(__name__)
@@ -18,14 +17,15 @@ if 'DOCKERMIRROR_API_SETTINGS' in os.environ:
 conn = redis.from_url(app.config['REDIS_URL'])
 
 
-def create_archive(archive, images):
+def create_archive(output_dir, images):
     """
-    Wrapper for archive.save() used for redis queue, as instance methods
-    is not supported as the function argument in rq.Queue.enqueue as pickle
-    fails
+    Wrapper for DockerMirror.save() used for redis queue, as instance methods is
+    not supported as the function argument in rq.Queue.enqueue because they can't
+    be pickled
 
     """
-    archive.save(images, remove=False)
+    dm = DockerMirror()
+    archive = dm.save(output_dir, images, remove=False)
     return archive.name
 
 
@@ -41,14 +41,11 @@ def add_save_task():
     if not isinstance(request.json['images'], list):
         abort(400)
 
-    filename = get_archive_name(request.json['images'])
-    archive_path = Path(app.config['OUTPUT_DIR']).joinpath(filename)
-    archive = DockerArchive(archive_path)
     images = [DockerImage(i) for i in request.json['images']]
 
     with Connection(conn):
         q = Queue('default')
-        job = q.enqueue(create_archive, archive, images,
+        job = q.enqueue(create_archive, Path(app.config['OUTPUT_DIR']), images,
                         timeout='1h', ttl='24h', result_ttl='7d')
 
     response = {
