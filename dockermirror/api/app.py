@@ -17,12 +17,11 @@ if 'DOCKERMIRROR_API_SETTINGS' in os.environ:
 conn = redis.from_url(app.config['REDIS_URL'])
 
 
-def create_archive(output_dir, images):
+def save_images(output_dir, images):
     """
     Wrapper for DockerMirror.save() used for redis queue, as instance methods is
     not supported as the function argument in rq.Queue.enqueue because they can't
     be pickled
-
     """
     dm = DockerMirror()
     archive = dm.save(output_dir, images, remove=False)
@@ -34,7 +33,7 @@ def index():
     return "Dockermirror API"
 
 @app.route('/api/v1/archive', methods=['POST'])
-def add_save_task():
+def create_archive():
     if not request.json or 'images' not in request.json:
         abort(400)
 
@@ -45,7 +44,7 @@ def add_save_task():
 
     with Connection(conn):
         q = Queue('default')
-        job = q.enqueue(create_archive, Path(app.config['OUTPUT_DIR']), images,
+        job = q.enqueue(save_images, Path(app.config['OUTPUT_DIR']), images,
                         timeout='1h', ttl='24h', result_ttl='7d')
 
     response = {
