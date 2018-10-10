@@ -90,7 +90,7 @@ class DockerImage:
 
     def tag(self, repotag):
         LOGGER.debug('Tagging docker image %s with tag %s', self.name, repotag)
-        self._image.tag(repotag)
+        self.image.tag(repotag)
         return DockerImage(repotag)
 
     def remove(self):
