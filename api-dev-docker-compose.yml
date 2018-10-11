@@ -1,11 +1,15 @@
 version: '3'
 services:
-  api:
+  api-dev:
     build:
       context: .
-      dockerfile: Dockerfile-api
+      dockerfile: Dockerfile-api-dev
     volumes:
       - archives:/var/spool/dockermirror
+    ports:
+      - 5000:5000/tcp
+    environment:
+      - FLASK_ENV=development
     depends_on:
       - redis
   worker:
@@ -18,14 +22,6 @@ services:
     depends_on:
       - redis
   redis:
-    image: redis:latest
-  nginx:
-    image: nginx:latest
-    ports:
-      - 5000:80/tcp
-    volumes:
-      - ./deployment/nginx/api.conf:/etc/nginx/conf.d/api.conf
-    depends_on:
-      - api
+    image: redis
 volumes:
   archives:

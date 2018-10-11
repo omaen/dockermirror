@@ -1,0 +1,14 @@
+FROM python:3
+
+RUN mkdir /src
+WORKDIR /src
+
+COPY api-requirements.txt .
+RUN pip install --no-cache-dir -r api-requirements.txt
+COPY dockermirror/ /src/dockermirror
+
+VOLUME /var/spool/dockermirror
+EXPOSE 5000/tcp
+
+ENV FLASK_APP=dockermirror.api.app
+ENTRYPOINT ["flask", "run", "--host=0.0.0.0"]
