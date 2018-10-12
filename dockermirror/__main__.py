@@ -37,7 +37,7 @@ def main():
 
     # save subcommand
     save_parser = subparsers.add_parser('save', help='save docker image to file')
-    save_parser.add_argument('--output-dir', metavar='DIRECTORY', default='.',
+    save_parser.add_argument('--output-dir', metavar='DIRECTORY', default='/var/spool/dockermirror',
                              help='directory to put archive file in')
     save_parser.add_argument('--remove', action='store_true', default=False,
                              help='remove docker images after save')
@@ -65,7 +65,7 @@ def main():
                                 help='push archive images to registry')
     monitor_parser.add_argument('--interval', metavar='SECONDS', default=60, type=int,
                                 help='monitor directory scan interval')
-    monitor_parser.add_argument('directory', metavar='DIRECTORY',
+    monitor_parser.add_argument('--directory', metavar='DIRECTORY', default='/var/spool/dockermirror',
                                 help='directory to monitor')
 
     # show subcommands
