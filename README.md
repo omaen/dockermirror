@@ -18,14 +18,18 @@ When the job has finished it is possible to check archive information from the s
 
     curl -v http://dockermirror:5000/api/v1/archive/_sYP7FfCCETSPeaNkQFXH69DLAPORf7ly2EhpGSQ1Ak.tar
 
+# Archive volume
+In non-dev environments the docker-compose files are configured to use a named docker volume called archives handled externally. That means that this volume should be preinitialized before starting the containers.
+
+    # Example bind mounted named volume
+    docker volume create --opt type=none --opt o=bind --opt device=/path/to/archives --name archives
+
 # Run dockermirror command in docker container
 
     docker-compose run --rm dockermirror <dockermirror_args>
 
 # Run API server in docker containers
 
-    # Example bind mounted named volume
-    docker volume create --opt type=none --opt o=bind --opt device=/path/to/archives --name archives
     docker-compose -f api-docker-compose.yml up
 
 # Run tests
