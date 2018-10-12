@@ -20,12 +20,13 @@ services:
   redis:
     image: redis:latest
   nginx:
-    image: nginx:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
     ports:
       - 5000:80/tcp
-    volumes:
-      - ./deployment/nginx/api.conf:/etc/nginx/conf.d/api.conf
     depends_on:
       - api
 volumes:
   archives:
+    external: true

@@ -24,6 +24,8 @@ When the job has finished it is possible to check archive information from the s
 
 # Run API server in docker containers
 
+    # Example bind mounted named volume
+    docker volume create --opt type=none --opt o=bind --opt device=/path/to/archives --name archives
     docker-compose -f api-docker-compose.yml up
 
 # Run tests
