@@ -30,7 +30,7 @@ In non-dev environments the docker-compose files are configured to use a named d
 
 # Run API server in docker containers
 
-    docker-compose -f api-docker-compose.yml up
+    docker-compose -f api-docker-compose.yml up -d
 
 # Run tests
 

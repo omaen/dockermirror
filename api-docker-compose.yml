@@ -8,6 +8,7 @@ services:
       - archives:/var/spool/dockermirror
     depends_on:
       - redis
+    restart: always
   worker:
     build:
       context: .
@@ -17,8 +18,10 @@ services:
       - archives:/var/spool/dockermirror
     depends_on:
       - redis
+    restart: always
   redis:
     image: redis:latest
+    restart: always
   nginx:
     build:
       context: .
@@ -27,6 +30,7 @@ services:
       - 5000:80/tcp
     depends_on:
       - api
+    restart: always
 volumes:
   archives:
     external: true
